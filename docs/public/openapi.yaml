@@ -1,0 +1,685 @@
+openapi: 3.1.0
+info:
+  title: Nexly API
+  version: 1.0.0
+  description: |
+    Nexly API 提供兼容 OpenAI 协议的 AI 模型接口。
+
+    所有受保护接口都使用 Bearer Token 鉴权。请先在控制台创建 API Key，
+    再点击右侧的认证按钮输入密钥。接口与参数的实际可用性取决于所选模型。
+  contact:
+    name: Nexly API
+    url: https://nexlycn.guangnian.xin
+  license:
+    name: All rights reserved
+    identifier: LicenseRef-Proprietary
+servers:
+  - url: https://nexlycn.guangnian.xin
+    description: Nexly API 生产环境
+tags:
+  - name: 模型
+    description: 查询账号当前可用的模型
+  - name: 对话
+    description: OpenAI 兼容的对话生成接口
+  - name: 响应
+    description: Responses API 兼容接口
+  - name: 向量
+    description: 文本向量接口
+  - name: 图像
+    description: 图像生成接口
+  - name: 音频
+    description: 语音合成与语音识别接口
+security:
+  - BearerAuth: []
+paths:
+  /v1/models:
+    get:
+      tags: [模型]
+      summary: 获取模型列表
+      description: 返回当前 API Key 可以使用的模型。模型列表会随账号权限和渠道变化。
+      operationId: listModels
+      responses:
+        '200':
+          description: 模型列表
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelList'
+              example:
+                object: list
+                data:
+                  - id: gpt-4o-mini
+                    object: model
+                    owned_by: provider
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/chat/completions:
+    post:
+      tags: [对话]
+      summary: 创建对话补全
+      description: |
+        根据消息列表生成模型回复。设置 `stream: true` 可使用 Server-Sent Events 接收增量结果。
+        不同模型支持的参数可能不同。
+      operationId: createChatCompletion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+            examples:
+              basic:
+                summary: 基础对话
+                value:
+                  model: gpt-4o-mini
+                  messages:
+                    - role: system
+                      content: 你是一个简洁的中文助手。
+                    - role: user
+                      content: 用一句话介绍你自己。
+                  stream: false
+              streaming:
+                summary: 流式对话
+                value:
+                  model: gpt-4o-mini
+                  messages:
+                    - role: user
+                      content: 写一首四行短诗。
+                  stream: true
+      responses:
+        '200':
+          description: 对话补全结果；流式请求返回 `text/event-stream`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  以 `data:` 开头的 SSE 数据流，并以 `data: [DONE]` 结束。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /v1/responses:
+    post:
+      tags: [响应]
+      summary: 创建模型响应
+      description: 使用 Responses API 风格输入生成响应。仅适用于支持该接口的模型与渠道。
+      operationId: createResponse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResponseRequest'
+            example:
+              model: gpt-4o-mini
+              input: 解释什么是 HTTP API。
+      responses:
+        '200':
+          description: 生成结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseObject'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/embeddings:
+    post:
+      tags: [向量]
+      summary: 创建文本向量
+      description: 将字符串或字符串数组转换为向量。
+      operationId: createEmbedding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddingRequest'
+            example:
+              model: text-embedding-3-small
+              input:
+                - Nexly API 兼容 OpenAI 协议。
+      responses:
+        '200':
+          description: 向量结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmbeddingResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/images/generations:
+    post:
+      tags: [图像]
+      summary: 生成图像
+      description: 根据文本提示词生成图像。尺寸、质量和返回格式取决于所选模型。
+      operationId: createImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageGenerationRequest'
+            example:
+              model: dall-e-3
+              prompt: 一座漂浮在云海上的未来城市，电影光效
+              n: 1
+              size: 1024x1024
+      responses:
+        '200':
+          description: 图像生成结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageGenerationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/audio/speech:
+    post:
+      tags: [音频]
+      summary: 文本转语音
+      description: 将输入文本转换为音频。仅适用于支持语音合成的模型。
+      operationId: createSpeech
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SpeechRequest'
+            example:
+              model: tts-1
+              input: 欢迎使用 Nexly API。
+              voice: alloy
+              response_format: mp3
+      responses:
+        '200':
+          description: 音频二进制数据
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+            audio/wav:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /v1/audio/transcriptions:
+    post:
+      tags: [音频]
+      summary: 语音转文本
+      description: 上传音频文件并生成转录文本。允许的格式与文件大小以所选模型为准。
+      operationId: createTranscription
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, model]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 要转录的音频文件
+                model:
+                  type: string
+                  description: 语音识别模型 ID
+                  example: whisper-1
+                language:
+                  type: string
+                  description: ISO-639-1 语言代码，例如 `zh` 或 `en`
+                  example: zh
+                prompt:
+                  type: string
+                  description: 用于改善专有名词识别的可选提示
+                response_format:
+                  type: string
+                  enum: [json, text, srt, verbose_json, vtt]
+                  default: json
+                temperature:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  default: 0
+      responses:
+        '200':
+          description: 转录结果
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [text]
+                properties:
+                  text:
+                    type: string
+              example:
+                text: 欢迎使用 Nexly API。
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+      description: 在控制台创建的 Nexly API Key
+  responses:
+    BadRequest:
+      description: 请求参数不正确，或模型不支持指定能力
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: 未提供有效的 API Key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: Invalid API key
+              type: invalid_request_error
+              code: invalid_api_key
+    RateLimited:
+      description: 请求频率过高、并发受限或额度不足
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: 服务或上游模型暂时异常
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    Model:
+      type: object
+      required: [id, object]
+      properties:
+        id:
+          type: string
+          description: 请求中使用的模型 ID
+        object:
+          type: string
+          const: model
+        created:
+          type: integer
+          description: Unix 时间戳；部分模型可能不返回
+        owned_by:
+          type: string
+          description: 模型提供方
+      additionalProperties: true
+    ModelList:
+      type: object
+      required: [object, data]
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Model'
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [developer, system, user, assistant, tool]
+        content:
+          oneOf:
+            - type: string
+            - type: array
+              description: 多模态内容数组，具体结构取决于模型
+              items:
+                type: object
+                additionalProperties: true
+        name:
+          type: string
+        tool_call_id:
+          type: string
+        tool_calls:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+    ChatCompletionRequest:
+      type: object
+      required: [model, messages]
+      properties:
+        model:
+          type: string
+          description: 从 `/v1/models` 获取的模型 ID
+          example: gpt-4o-mini
+        messages:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+          description: 采样温度。并非所有模型都支持该参数
+        top_p:
+          type: number
+          minimum: 0
+          maximum: 1
+        max_tokens:
+          type: integer
+          minimum: 1
+          description: 最大输出 Token 数；部分模型使用 `max_completion_tokens`
+        max_completion_tokens:
+          type: integer
+          minimum: 1
+        stream:
+          type: boolean
+          default: false
+        stop:
+          oneOf:
+            - type: string
+            - type: array
+              maxItems: 4
+              items:
+                type: string
+        tools:
+          type: array
+          description: 模型可以调用的工具定义
+          items:
+            type: object
+            additionalProperties: true
+        tool_choice:
+          description: 控制模型是否以及如何调用工具
+          oneOf:
+            - type: string
+              enum: [none, auto, required]
+            - type: object
+              additionalProperties: true
+        response_format:
+          type: object
+          description: 请求 JSON 等结构化输出；具体支持情况取决于模型
+          additionalProperties: true
+        user:
+          type: string
+          description: 可选的终端用户标识
+      additionalProperties: true
+    ChatCompletionResponse:
+      type: object
+      required: [id, object, created, model, choices]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: chat.completion
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            required: [index, message]
+            properties:
+              index:
+                type: integer
+              message:
+                $ref: '#/components/schemas/ChatMessage'
+              finish_reason:
+                type: [string, 'null']
+        usage:
+          $ref: '#/components/schemas/Usage'
+        system_fingerprint:
+          type: [string, 'null']
+      additionalProperties: true
+    ResponseRequest:
+      type: object
+      required: [model, input]
+      properties:
+        model:
+          type: string
+          description: 支持 Responses API 的模型 ID
+        input:
+          description: 字符串或输入项目数组
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+                additionalProperties: true
+        instructions:
+          type: string
+        max_output_tokens:
+          type: integer
+          minimum: 1
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        stream:
+          type: boolean
+          default: false
+        tools:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+    ResponseObject:
+      type: object
+      required: [id, object, status, output]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          example: response
+        status:
+          type: string
+          example: completed
+        model:
+          type: string
+        output:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        output_text:
+          type: string
+          description: 部分实现提供的便捷文本字段
+        usage:
+          $ref: '#/components/schemas/Usage'
+      additionalProperties: true
+    EmbeddingRequest:
+      type: object
+      required: [model, input]
+      properties:
+        model:
+          type: string
+          description: 嵌入模型 ID
+        input:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        encoding_format:
+          type: string
+          enum: [float, base64]
+          default: float
+        dimensions:
+          type: integer
+          minimum: 1
+          description: 仅部分嵌入模型支持自定义维度
+        user:
+          type: string
+      additionalProperties: true
+    EmbeddingResponse:
+      type: object
+      required: [object, data, model, usage]
+      properties:
+        object:
+          type: string
+          const: list
+        data:
+          type: array
+          items:
+            type: object
+            required: [object, embedding, index]
+            properties:
+              object:
+                type: string
+                const: embedding
+              embedding:
+                type: array
+                items:
+                  type: number
+              index:
+                type: integer
+        model:
+          type: string
+        usage:
+          $ref: '#/components/schemas/Usage'
+    ImageGenerationRequest:
+      type: object
+      required: [prompt]
+      properties:
+        model:
+          type: string
+          description: 图像模型 ID
+        prompt:
+          type: string
+          description: 图像描述
+        n:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 1
+        quality:
+          type: string
+          description: 例如 `standard` 或 `hd`；取决于模型
+        response_format:
+          type: string
+          enum: [url, b64_json]
+          default: url
+        size:
+          type: string
+          example: 1024x1024
+        style:
+          type: string
+        user:
+          type: string
+      additionalProperties: true
+    ImageGenerationResponse:
+      type: object
+      required: [created, data]
+      properties:
+        created:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              b64_json:
+                type: string
+              revised_prompt:
+                type: string
+            additionalProperties: true
+    SpeechRequest:
+      type: object
+      required: [model, input, voice]
+      properties:
+        model:
+          type: string
+          description: 语音合成模型 ID
+        input:
+          type: string
+          maxLength: 4096
+        voice:
+          type: string
+          description: 模型支持的音色名称
+        response_format:
+          type: string
+          enum: [mp3, opus, aac, flac, wav, pcm]
+          default: mp3
+        speed:
+          type: number
+          minimum: 0.25
+          maximum: 4
+          default: 1
+      additionalProperties: true
+    Usage:
+      type: object
+      properties:
+        prompt_tokens:
+          type: integer
+        completion_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+      additionalProperties: true
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message]
+          properties:
+            message:
+              type: string
+            type:
+              type: string
+            param:
+              type: [string, 'null']
+            code:
+              type: [string, 'null']
+          additionalProperties: true
+      additionalProperties: true
