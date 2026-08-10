@@ -63,6 +63,11 @@ Nexly 工作台可以直接生成 CC Switch 配置，并通过系统协议唤起
 2. 如果 CC Switch 显示导入确认页，检查应用、名称、端点和模型。
 3. 确认导入。
 
+<figure class="docs-screenshot docs-screenshot-dialog">
+  <img src="/images/cc-switch/platform-import-api-succ.png" alt="导入成功后 CC Switch 自动打开" loading="lazy" />
+  <figcaption>导入成功后</figcaption>
+</figure>
+
 导入完成后，CC Switch 的 Codex 供应商列表中会新增一条数据。确认新供应商处于启用状态；如果没有自动启用，点击供应商卡片上的 **启用**。
 
 ::: danger 不要分享导入链接
