@@ -31,6 +31,7 @@ const checks = [
   { path: '/tools/cc-switch-codex', contains: '配置 Codex' },
   { path: '/tools/cc-switch-claude', contains: '配置 Claude Code' },
   { path: '/api-reference', contains: 'API Reference' },
+  { path: '/images/quickstart/macos-api-quickstart.webp', contentType: 'image/webp' },
   { path: '/images/cc-switch/platform-import-api-key.png', contentType: 'image/png' },
   { path: '/images/cc-switch/platform-import-dialog.png', contentType: 'image/png' },
   { path: '/openapi.yaml', contains: 'https://nexlycn.guangnian.xin' },

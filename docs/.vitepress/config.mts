@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   lang: 'zh-CN',
   title: 'Nexly API',
-  description: '稳定、简单、兼容 OpenAI 协议的 AI API 服务',
+  description: '一套 API，连接每一种智能。兼容 OpenAI 协议的统一 AI API 服务。',
   cleanUrls: true,
   lastUpdated: true,
   sitemap: {
@@ -11,7 +11,7 @@ export default defineConfig({
   },
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
-    ['meta', { name: 'theme-color', content: '#6d5dfc' }],
+    ['meta', { name: 'theme-color', content: '#0b1923' }],
     ['meta', { property: 'og:site_name', content: 'Nexly API 文档' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:image', content: 'https://nexlydocs.guangnian.xin/logo.png' }]
@@ -20,8 +20,17 @@ export default defineConfig({
     logo: '/logo.png',
     siteTitle: 'Nexly API',
     nav: [
-      { text: '文档', link: '/guide/quickstart' },
+      { text: '开始使用', link: '/guide/quickstart' },
+      { text: '开发指南', link: '/sdk/openai' },
       { text: 'API Reference', link: '/api-reference' },
+      {
+        text: '工具',
+        items: [
+          { text: 'CC Switch 快速导入', link: '/tools/cc-switch-quick-import' },
+          { text: '配置 Codex', link: '/tools/cc-switch-codex' },
+          { text: '配置 Claude Code', link: '/tools/cc-switch-claude' }
+        ]
+      },
       { text: '控制台', link: 'https://nexlycn.guangnian.xin' }
     ],
     sidebar: [
