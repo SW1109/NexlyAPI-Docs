@@ -2,11 +2,11 @@
 
 ## Nexly API 可以直接使用 OpenAI SDK 吗？
 
-可以。把 SDK 的 Base URL 修改为 `https://nexlycn.guangnian.xin/v1`，并使用 Nexly API Key 和 `/v1/models` 返回的模型 ID。完整示例见 [OpenAI SDK](/sdk/openai)。
+可以。把 SDK 的 Base URL 修改为 `https://nexly.guangnian.xin`，并使用 Nexly API Key 和 `/v1/models` 返回的模型 ID。完整示例见 [OpenAI SDK](/sdk/openai)。
 
-## Base URL 到底要不要带 `/v1`？
+## Nexly API Base URL 要不要带 `/v1`？
 
-OpenAI SDK 和大多数客户端填写 `https://nexlycn.guangnian.xin/v1`。如果客户端明确说明会自动添加 `/v1`，则填写根地址。详细判定见[客户端配置](/guide/client-config#先确认地址类型)。
+不需要。SDK、CC Switch 和客户端统一填写 `https://nexly.guangnian.xin`，Nexly API 会自动识别接口。只有直接发送 HTTP 请求或客户端明确要求“完整接口 URL”时，才填写 `/v1/models`、`/v1/chat/completions` 等完整路径。详见[客户端配置](/guide/client-config#先确认地址类型)。
 
 ## 为什么示例模型无法调用？
 

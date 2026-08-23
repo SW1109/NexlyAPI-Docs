@@ -2,6 +2,8 @@
 
 API 使用标准 HTTP 状态码表示请求结果。排错时先保留状态码、错误响应和请求 ID，再修改配置；不要只根据客户端弹出的简短提示判断原因。
 
+先确认 Base URL 为 `https://nexly.guangnian.xin`，并且使用的是 Nexly API 控制台创建的 Key。
+
 ## 最小诊断流程
 
 遇到问题时按以下顺序检查，可以快速区分 Key、模型和业务参数问题。
@@ -9,7 +11,7 @@ API 使用标准 HTTP 状态码表示请求结果。排错时先保留状态码�
 ### 1. 检查服务与认证
 
 ```bash
-curl -i https://nexlycn.guangnian.xin/v1/models \
+curl -i https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
@@ -61,7 +63,7 @@ curl -i https://nexlycn.guangnian.xin/v1/models \
 
 ### 出现 `/v1/v1`
 
-Base URL 和客户端都添加了 `/v1`。将客户端地址改为 `https://nexlycn.guangnian.xin`，或关闭自动拼接版本路径。
+Base URL 和客户端都添加了 `/v1`。将客户端地址改为 `https://nexly.guangnian.xin`，或关闭自动拼接版本路径。
 
 ### `/v1/models` 成功，但对话返回 404
 

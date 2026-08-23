@@ -8,6 +8,10 @@ Authorization: Bearer YOUR_API_KEY
 
 `Bearer`、一个空格和完整 API Key 缺一不可。
 
+::: tip 创建 API Key
+登录 [Nexly API 控制台](https://nexly.guangnian.xin)，在 **API 密钥**页面为不同项目和设备分别创建 Key。
+:::
+
 ## 使用环境变量
 
 不要把 Key 直接写进源代码。建议在启动应用前设置环境变量：
@@ -27,7 +31,7 @@ $env:NEXLY_API_KEY="你的 API Key"
 请求示例：
 
 ```bash
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/models \
+curl --fail-with-body https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 

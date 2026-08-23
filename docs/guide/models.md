@@ -1,11 +1,11 @@
 # 模型与能力
 
-不同账号、渠道和时间段可用的模型可能不同。不要把文档中的示例名称当作固定模型，请始终以 `/v1/models` 或控制台当前显示为准。
+不同账号、分组和时间段可用的模型可能不同。不要把文档中的示例名称当作固定模型，请始终以 Nexly API 的 `/v1/models` 或控制台显示为准。
 
 ## 1. 查询模型
 
 ```bash
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/models \
+curl --fail-with-body https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 

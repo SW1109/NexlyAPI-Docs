@@ -5,21 +5,21 @@
 本教程适用于 CC Switch v3.16 及以上版本。不同版本的按钮名称可能略有差异，请以应用内界面为准。
 
 ::: tip 已经有 Nexly API Key？
-推荐直接使用[平台快速导入](/tools/cc-switch-quick-import)。平台会自动生成配置并唤起 CC Switch，不需要手动填写 Base URL 和协议参数。
+推荐直接使用[Nexly API 快速导入](/tools/cc-switch-quick-import)。密钥页会生成配置或唤起 CC Switch，不需要手动填写 Base URL 和协议参数。
 :::
 
 ## 准备工作
 
 开始前需要准备：
 
-1. 从 [Nexly API 控制台](https://nexlycn.guangnian.xin)创建一个 API Key。
+1. 从 [Nexly API 控制台](https://nexly.guangnian.xin)创建一个 API Key。
 2. 确认 API Key 能够查询模型列表。
 3. 安装至少一个需要管理的 CLI，例如 Codex 或 Claude Code。
 
 可以先用下面的命令验证密钥：
 
 ```bash
-curl https://nexlycn.guangnian.xin/v1/models \
+curl https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
@@ -76,9 +76,9 @@ paru -S cc-switch-bin
 
 | 使用场景 | 端点 | API 格式 |
 | --- | --- | --- |
-| Codex 直连 Responses | `https://nexlycn.guangnian.xin/v1` | Responses |
-| Claude Code 直连 Anthropic | `https://nexlycn.guangnian.xin` | Anthropic Messages |
-| Claude Code 经 CC Switch 转换 | `https://nexlycn.guangnian.xin` | OpenAI Chat Completions |
+| Codex 直连 Responses | `https://nexly.guangnian.xin` | Responses |
+| Claude Code 直连 Anthropic | `https://nexly.guangnian.xin` | Anthropic Messages |
+| Claude Code 经 CC Switch 转换 | `https://nexly.guangnian.xin` | OpenAI Chat Completions |
 
 不要在端点中填写 `/chat/completions`，除非你明确开启了 CC Switch 的“完整 URL 模式”。
 
@@ -87,7 +87,7 @@ paru -S cc-switch-bin
 填写端点和 API Key 后，点击模型输入框旁边的 **获取模型** 按钮。CC Switch 会请求：
 
 ```text
-GET https://nexlycn.guangnian.xin/v1/models
+GET https://nexly.guangnian.xin/v1/models
 ```
 
 从返回列表中选择模型即可。如果自动获取失败，也可以登录控制台查看模型 ID 并手动填写。
@@ -106,11 +106,11 @@ Codex 等 CLI 通常需要重新启动才能读取新配置。Claude Code 可以
 - 不要截图或分享包含完整 API Key 的 CC Switch 配置页面。
 - 不要把 CC Switch 导出的数据库备份上传到网盘或公开仓库。
 - 公共电脑上使用完毕后，应删除供应商并撤销 API Key。
-- 发现密钥泄露时，立即在 Nexly 控制台删除旧密钥。
+- 发现密钥泄露时，立即在 Nexly API 控制台删除旧密钥。
 
 ## 下一步
 
-- [从 Nexly 平台快速导入](/tools/cc-switch-quick-import)
+- [从 Nexly API 快速导入](/tools/cc-switch-quick-import)
 - [配置 Codex](/tools/cc-switch-codex)
 - [配置 Claude Code](/tools/cc-switch-claude)
 

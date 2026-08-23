@@ -31,13 +31,14 @@ export default defineConfig({
           { text: '配置 Claude Code', link: '/tools/cc-switch-claude' }
         ]
       },
-      { text: '控制台', link: 'https://nexlycn.guangnian.xin' }
+      { text: '控制台', link: 'https://nexly.guangnian.xin' }
     ],
     sidebar: [
       {
         text: '开始使用',
         items: [
           { text: '快速开始', link: '/guide/quickstart' },
+          { text: 'Nexly API 工作台', link: '/guide/console' },
           { text: '身份认证', link: '/guide/authentication' },
           { text: '模型与能力', link: '/guide/models' },
           { text: '客户端配置', link: '/guide/client-config' }
@@ -54,7 +55,7 @@ export default defineConfig({
       {
         text: 'CC Switch',
         items: [
-          { text: '平台快速导入（推荐）', link: '/tools/cc-switch-quick-import' },
+          { text: 'Nexly API 快速导入（推荐）', link: '/tools/cc-switch-quick-import' },
           { text: '安装与添加 Nexly', link: '/tools/cc-switch' },
           { text: '配置 Codex', link: '/tools/cc-switch-codex' },
           { text: '配置 Claude Code', link: '/tools/cc-switch-claude' }

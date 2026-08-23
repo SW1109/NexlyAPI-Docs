@@ -26,15 +26,14 @@ server.stderr.on('data', (chunk) => {
 const checks = [
   { path: '/', contains: 'Nexly API' },
   { path: '/guide/quickstart', contains: '快速开始' },
-  { path: '/tools/cc-switch-quick-import', contains: '平台快速导入' },
+  { path: '/guide/console', contains: 'Nexly API 工作台' },
+  { path: '/tools/cc-switch-quick-import', contains: '从 Nexly API 快速导入' },
   { path: '/tools/cc-switch', contains: '安装与添加 Nexly' },
   { path: '/tools/cc-switch-codex', contains: '配置 Codex' },
   { path: '/tools/cc-switch-claude', contains: '配置 Claude Code' },
   { path: '/api-reference', contains: 'API Reference' },
   { path: '/images/quickstart/macos-api-quickstart.webp', contentType: 'image/webp' },
-  { path: '/images/cc-switch/platform-import-api-key.png', contentType: 'image/png' },
-  { path: '/images/cc-switch/platform-import-dialog.png', contentType: 'image/png' },
-  { path: '/openapi.yaml', contains: 'https://nexlycn.guangnian.xin' },
+  { path: '/openapi.yaml', contains: 'https://nexly.guangnian.xin' },
   { path: '/sitemap.xml', contains: 'nexlydocs.guangnian.xin' }
 ]
 

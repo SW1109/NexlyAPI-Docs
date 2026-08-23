@@ -133,7 +133,7 @@ def build() -> None:
     draw.ellipse((158, 205, 170, 217), fill="#febc2e")
     draw.ellipse((178, 205, 190, 217), fill="#28c840")
     draw.rounded_rectangle((220, 198, 832, 226), radius=10, fill="#0e1b24")
-    draw.text((238, 203), "nexlycn.guangnian.xin/keys", font=font(12, mono=True), fill="#9cb2ba")
+    draw.text((238, 203), "nexly.guangnian.xin/keys", font=font(12, mono=True), fill="#9cb2ba")
 
     reference = Image.open(REFERENCE).convert("RGB")
     reference_view = fit_cover(reference, (886, 680))
@@ -165,7 +165,7 @@ def build() -> None:
     draw.text((x + 22, y), 'export NEXLY_API_KEY="••••••••"', font=mono, fill="#d6e4e6")
     y += line * 2
     draw.text((x, y), "$", font=mono_bold, fill="#62dfca")
-    draw.text((x + 22, y), "curl https://nexlycn.guangnian.xin/", font=small_mono, fill="#8fc4ed")
+    draw.text((x + 22, y), "curl https://nexly.guangnian.xin/", font=small_mono, fill="#8fc4ed")
     y += line
     draw.text((x + 22, y), "v1/models \\", font=small_mono, fill="#8fc4ed")
     y += line

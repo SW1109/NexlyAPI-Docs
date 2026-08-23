@@ -39,7 +39,7 @@ body {
   font-weight: 560;
 }
 
-.VPNavBarMenuLink[href="https://nexlycn.guangnian.xin"] {
+.VPNavBarMenuLink[href="https://nexly.guangnian.xin"] {
   min-height: 34px;
   padding: 0 14px;
   border-radius: 9px;
@@ -47,7 +47,7 @@ body {
   background: #102a35;
 }
 
-.VPNavBarMenuLink[href="https://nexlycn.guangnian.xin"]:hover {
+.VPNavBarMenuLink[href="https://nexly.guangnian.xin"]:hover {
   color: #ffffff;
   background: #17414b;
 }
@@ -310,6 +310,127 @@ body {
   font-size: 13px;
 }
 
+.screenshot-slot {
+  position: relative;
+  overflow: hidden;
+  margin: 24px 0 32px;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(85, 227, 197, 0.08), transparent 45%),
+    var(--vp-c-bg-soft);
+  box-shadow: 0 14px 36px rgba(8, 12, 28, 0.1);
+}
+
+.screenshot-slot--wide {
+  min-height: 300px;
+  aspect-ratio: 16 / 7;
+}
+
+.screenshot-slot--standard {
+  min-height: 360px;
+  aspect-ratio: 4 / 3;
+}
+
+.screenshot-slot--portrait {
+  width: min(100%, 620px);
+  min-height: 520px;
+  margin-right: auto;
+  margin-left: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.screenshot-slot__image {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  object-fit: contain;
+  background: var(--vp-c-bg);
+  transition: opacity 160ms ease;
+}
+
+.screenshot-slot__image--loaded {
+  opacity: 1;
+}
+
+.screenshot-slot__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 32px;
+  text-align: center;
+}
+
+.screenshot-slot__placeholder::before,
+.screenshot-slot__placeholder::after {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-color: var(--vp-c-brand-1);
+  opacity: 0.45;
+  content: '';
+}
+
+.screenshot-slot__placeholder::before {
+  top: 18px;
+  left: 18px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.screenshot-slot__placeholder::after {
+  right: 18px;
+  bottom: 18px;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+}
+
+.screenshot-slot__index {
+  margin-bottom: 12px;
+  color: var(--vp-c-brand-1);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.screenshot-slot__placeholder strong {
+  font-size: 21px;
+}
+
+.screenshot-slot__placeholder p {
+  max-width: 520px;
+  margin: 8px 0 14px;
+  color: var(--vp-c-text-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.screenshot-slot__placeholder code {
+  overflow-wrap: anywhere;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+}
+
+.screenshot-slot figcaption {
+  position: absolute;
+  z-index: 3;
+  right: 12px;
+  bottom: 12px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 7px;
+  color: #fff;
+  background: rgba(5, 13, 20, 0.76);
+  font-size: 12px;
+  backdrop-filter: blur(8px);
+}
+
 @media (max-width: 640px) {
   body {
     font-size: 16px;
@@ -336,6 +457,21 @@ body {
   .vp-doc li {
     font-size: 16px;
     line-height: 1.8;
+  }
+
+  .screenshot-slot--wide,
+  .screenshot-slot--standard,
+  .screenshot-slot--portrait {
+    min-height: 300px;
+    aspect-ratio: auto;
+  }
+
+  .screenshot-slot__placeholder {
+    padding: 24px;
+  }
+
+  .screenshot-slot__placeholder strong {
+    font-size: 18px;
   }
 
   .api-reference-guide {

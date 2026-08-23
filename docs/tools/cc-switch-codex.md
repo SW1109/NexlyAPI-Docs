@@ -1,25 +1,25 @@
 # CC Switch：配置 Codex
 
-Codex 原生使用 OpenAI Responses API。Nexly 提供对应接口时，可以通过 CC Switch 直接切换到 Nexly。
+Codex 原生使用 OpenAI Responses API。本页介绍如何配置 Nexly API。
 
 ::: tip 推荐方式
-如果能够登录 Nexly 工作台，优先使用[平台快速导入](/tools/cc-switch-quick-import)，无需手动填写以下配置。手动配置适合排查问题或需要自定义高级参数的用户。
+如果能够登录 Nexly API 工作台，优先使用[Nexly API 快速导入](/tools/cc-switch-quick-import)，无需手动填写以下配置。手动配置适合排查问题或需要自定义高级参数的用户。
 :::
 
-## 添加 Nexly Codex 供应商
+## 添加 Nexly API 供应商
 
 1. 打开 CC Switch，在左侧选择 **Codex**。
 2. 点击右上角 **+**，选择 **应用专属供应商**。
 3. 预设选择 **自定义**。
 4. 名称填写 `Nexly API`。
-5. API Key 填写在 Nexly 控制台创建的令牌。
-6. Base URL 填写 `https://nexlycn.guangnian.xin/v1`。
+5. API Key 填写在 Nexly API 控制台创建的 Key。
+6. Base URL 填写 `https://nexly.guangnian.xin`，无需添加 `/v1`。
 7. API 协议选择 **Responses**。
 8. 点击 **获取模型**，选择当前账号可用的模型。
 9. 保存并点击供应商卡片上的 **启用**。
 
 ::: warning 模型名称
-不要直接照抄教程中的示例模型。请使用“获取模型”返回的模型 ID，或者以 Nexly 控制台当前展示为准。
+不要直接照抄教程中的示例模型。请使用“获取模型”返回的模型 ID，或者以 Nexly API 控制台当前展示为准。
 :::
 
 ## 对应的 Codex 配置
@@ -43,7 +43,7 @@ disable_response_storage = true
 
 [model_providers.nexly]
 name = "Nexly API"
-base_url = "https://nexlycn.guangnian.xin/v1"
+base_url = "https://nexly.guangnian.xin"
 wire_api = "responses"
 requires_openai_auth = true
 ```
@@ -72,7 +72,7 @@ codex
 
 如果模型只支持 `/v1/chat/completions`，可以使用 CC Switch 的本地路由转换：
 
-1. 编辑 Nexly Codex 供应商。
+1. 编辑 Nexly API Codex 供应商。
 2. 打开 **需要本地路由映射**。
 3. 在模型映射表中添加从 `/v1/models` 获取的真实模型 ID。
 4. 打开 CC Switch 的 **代理服务 / 本地路由服务**。
@@ -82,7 +82,7 @@ codex
 CC Switch 会把 Codex 的 Responses 请求转换为 Chat Completions 请求，再将结果转换回 Codex 能识别的格式。使用期间需要保持 CC Switch 的本地路由服务运行。
 
 ::: info 什么时候不需要本地路由
-如果 `POST https://nexlycn.guangnian.xin/v1/responses` 对所选模型能够正常返回，就优先使用直连方式，配置更简单、链路也更短。
+如果 `POST https://nexly.guangnian.xin/v1/responses` 对所选模型能够正常返回，就优先使用直连方式，配置更简单、链路也更短。
 :::
 
 ## 常见问题
@@ -96,14 +96,14 @@ CC Switch 会把 Codex 的 Responses 请求转换为 Chat Completions 请求，�
 检查 Base URL 是否为：
 
 ```text
-https://nexlycn.guangnian.xin/v1
+https://nexly.guangnian.xin
 ```
 
 如果所选模型不支持 Responses，请按上一节开启本地路由映射。
 
-### 请求路径出现 `/v1/v1`
+### 请求路径出现重复的 `/v1`
 
-Base URL 被重复添加了版本路径。检查 CC Switch 中的端点，并关闭不必要的完整 URL或路径拼接设置。
+Base URL 被手动添加了版本路径。将 CC Switch 端点改为 `https://nexly.guangnian.xin`，并关闭不必要的完整 URL 或路径拼接设置。
 
 ### 切换后仍在使用旧供应商
 

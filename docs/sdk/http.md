@@ -1,12 +1,12 @@
 # HTTP 请求
 
-不使用 SDK 时，可以直接发送标准 HTTPS 请求。开始前请先设置 `NEXLY_API_KEY` 和 `NEXLY_MODEL`，具体方法见[快速开始](/guide/quickstart)。
+不使用 SDK 时，可以直接向 Nexly API 发送标准 HTTPS 请求。开始前请先设置 `NEXLY_API_KEY` 和 `NEXLY_MODEL`，具体方法见[快速开始](/guide/quickstart)。
 
 ## 请求约定
 
 | 项目 | 内容 |
 | --- | --- |
-| 服务根地址 | `https://nexlycn.guangnian.xin` |
+| 服务根地址 | `https://nexly.guangnian.xin` |
 | API 版本路径 | `/v1` |
 | 鉴权 | `Authorization: Bearer YOUR_API_KEY` |
 | JSON 请求 | `Content-Type: application/json` |
@@ -15,7 +15,7 @@
 ## 先验证认证
 
 ```bash
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/models \
+curl --fail-with-body https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
@@ -24,7 +24,7 @@ curl --fail-with-body https://nexlycn.guangnian.xin/v1/models \
 ## 非流式请求
 
 ```bash
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/chat/completions \
+curl --fail-with-body https://nexly.guangnian.xin/v1/chat/completions \
   -H "Authorization: Bearer $NEXLY_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
@@ -56,7 +56,7 @@ curl --fail-with-body https://nexlycn.guangnian.xin/v1/chat/completions \
 将 `stream` 设置为 `true`。服务端会通过 Server-Sent Events 持续返回增量数据：
 
 ```bash
-curl -N --fail-with-body https://nexlycn.guangnian.xin/v1/chat/completions \
+curl -N --fail-with-body https://nexly.guangnian.xin/v1/chat/completions \
   -H "Authorization: Bearer $NEXLY_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
@@ -79,7 +79,7 @@ data: [DONE]
 排错时添加 `-i`：
 
 ```bash
-curl -i https://nexlycn.guangnian.xin/v1/models \
+curl -i https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
@@ -91,7 +91,7 @@ curl -i https://nexlycn.guangnian.xin/v1/models \
 
 ```bash
 curl --connect-timeout 10 --max-time 120 \
-  https://nexlycn.guangnian.xin/v1/models \
+  https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 

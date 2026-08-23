@@ -3,7 +3,7 @@ import CapabilityGlyph from './CapabilityGlyph.vue'
 import EndpointConsole from './EndpointConsole.vue'
 import SystemTelemetry from './SystemTelemetry.vue'
 
-const endpoint = 'https://nexlycn.guangnian.xin'
+const endpoint = 'https://nexly.guangnian.xin'
 
 type CapabilityGlyphKind = 'protocol' | 'security' | 'developer' | 'reference'
 
@@ -31,7 +31,7 @@ const capabilities: readonly Capability[] = [
     index: '02',
     eyebrow: 'SECURITY',
     title: '密钥边界清晰',
-    detail: '统一使用 Bearer Token 鉴权，在控制台集中管理密钥与访问权限。',
+    detail: '统一使用 Bearer Token 鉴权，在 Nexly API 控制台集中管理订阅、密钥与访问权限。',
     metric: 'Bearer Auth',
     className: 'capability-card--blue',
     glyph: 'security'
@@ -88,12 +88,12 @@ const pipeline = [
             <span>连接每一种智能。</span>
           </h1>
           <p class="hero-description">
-            使用熟悉的 SDK 与统一协议接入主流 AI 模型。更少的适配工作，
-            更清晰的开发路径，让能力真正落到产品里。
+            通过 Nexly API 的统一入口接入模型服务。
+            使用熟悉的 SDK 与标准协议，把模型能力更稳妥地落到产品里。
           </p>
           <div class="hero-actions">
             <a class="home-button home-button--primary" href="/guide/quickstart">
-              开始构建
+              开始接入
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
             </a>
             <a class="home-button home-button--ghost" href="/api-reference">
@@ -102,8 +102,8 @@ const pipeline = [
           </div>
           <div class="hero-proof" aria-label="平台特性">
             <div><strong>5 min</strong><span>完成首个请求</span></div>
-            <div><strong>1 API</strong><span>统一调用入口</span></div>
-            <div><strong>24/7</strong><span>随时查阅文档</span></div>
+            <div><strong>OPENAI</strong><span>兼容标准协议</span></div>
+            <div><strong>STREAM</strong><span>支持流式响应</span></div>
           </div>
         </div>
 
@@ -217,7 +217,7 @@ const pipeline = [
         </div>
         <div class="cta-card__actions">
           <a class="home-button home-button--dark" href="/guide/quickstart">阅读快速开始</a>
-          <a class="cta-card__console" href="https://nexlycn.guangnian.xin">打开控制台 ↗</a>
+          <a class="cta-card__console" href="https://nexly.guangnian.xin">打开控制台 ↗</a>
         </div>
       </div>
     </section>

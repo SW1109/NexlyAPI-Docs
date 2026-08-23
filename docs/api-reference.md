@@ -18,8 +18,12 @@ footer: false
     <span><i>02</i>填写 Bearer Token</span>
     <span><i>03</i>发送请求并检查响应</span>
   </div>
-  <p>建议使用临时或低权限 Key。共享设备测试完成后，请清除认证信息，不要在截图或反馈中暴露完整 Key。</p>
+  <p>使用 Nexly API 控制台创建的 Key 完成认证。共享设备测试完成后请清除认证信息。</p>
 </section>
+
+::: warning 浏览器在线调试
+Nexly API 当前可能拦截来自文档站的浏览器跨域请求。如果在线发送提示网络错误，请复制生成的请求到终端运行；这不影响 SDK、CLI 或服务端调用。后续放行 `https://nexlydocs.guangnian.xin` 后即可直接在线调试。
+:::
 
 <ClientOnly>
   <ApiReference />

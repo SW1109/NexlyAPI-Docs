@@ -1,10 +1,10 @@
 # 快速开始
 
-本教程带你完成一个可验证的 Nexly API 请求。全程通常需要 5～10 分钟。
+本教程带你完成一个可验证的 Nexly API 请求，全程通常需要 5～10 分钟。
 
 <div class="api-base-url">
   <strong>API 服务地址</strong>
-  <code>https://nexlycn.guangnian.xin</code>
+  <code>https://nexly.guangnian.xin</code>
 </div>
 
 ::: tip 你将完成
@@ -15,7 +15,8 @@
 
 请确认当前设备具备以下条件：
 
-- 可以登录 [Nexly API 控制台](https://nexlycn.guangnian.xin)。
+- 可以登录 [Nexly API 控制台](https://nexly.guangnian.xin)。
+- **我的订阅**中已有可用订阅或额度。
 - 已安装 `curl`，或者已准备 Python 3.9+ / Node.js 18+。
 - 使用终端执行示例，而不是在浏览器控制台中直接暴露 API Key。
 
@@ -26,29 +27,30 @@
 | `NEXLY_API_KEY` | 保存从控制台创建的 API Key |
 | `NEXLY_MODEL` | 保存 `/v1/models` 返回的真实模型 ID |
 
-### macOS 图文演示
+### 操作流程预览
 
-下面以 macOS 为例展示完整操作路径：左侧在 Nexly 控制台创建并保存 API Key，右侧在终端设置环境变量、查询当前账号可用模型并发送请求。点击图片可以放大查看命令细节。
+下面的截图位置用于展示 Nexly API 创建 Key 和终端请求的完整路径。你补充图片后，文档会自动显示并支持点击放大。
 
-<figure class="docs-screenshot docs-screenshot-macos">
-  <img src="/images/quickstart/macos-api-quickstart.webp" alt="macOS 上从 Nexly 控制台创建 API Key，并在终端查询模型和发送首个请求" loading="lazy" />
-  <figcaption>macOS 操作演示：创建 API Key → 查询模型 ID → 发起请求 → 返回 200 OK。图中 Key 和模型 ID 均为演示内容。</figcaption>
-</figure>
+<ScreenshotPlaceholder
+  src="/images/nexlyapi/quickstart-overview.png"
+  title="Nexly API 快速开始完整流程"
+  description="建议截图包含：创建密钥、设置环境变量、查询模型、发送请求和 200 响应；所有 Key 必须打码。"
+/>
 
 ## 1. 创建 API Key
 
-1. 登录 [Nexly API 控制台](https://nexlycn.guangnian.xin)。
-2. 进入 **API 密钥**或**令牌管理**页面。
-3. 点击 **创建 API 密钥**。
+1. 登录 [Nexly API 控制台](https://nexly.guangnian.xin)。
+2. 先在 **我的订阅**确认订阅有效。
+3. 进入 **API 密钥**并点击 **创建密钥**。
 4. 填写便于识别的名称，例如 `quickstart-local`。
-5. 根据用途设置额度、有效期和可调用模型，然后保存。
-6. 复制新创建的 Key，并存放到安全位置。
+5. 选择与订阅匹配的模型分组，按需设置有效期、额度和 IP 限制。
+6. 保存、复制新 Key，并存放到安全位置。
 
 ::: danger 不要公开 API Key
 不要把真实 Key 写入 Git、网页前端、截图、聊天记录或客户端安装包。如果怀疑泄露，请立即删除旧 Key 并创建新 Key。
 :::
 
-如果已安装 CC Switch，也可以创建 Key 后使用[平台快速导入](/tools/cc-switch-quick-import)，跳过手工填写端点和模型的步骤。
+如果已安装 CC Switch，也可以创建 Key 后使用[Nexly API 快速导入](/tools/cc-switch-quick-import)，跳过手工填写端点和模型的步骤。工作台详细操作见 [Nexly API 工作台](/guide/console)。
 
 ## 2. 设置环境变量
 
@@ -89,14 +91,14 @@ if ($env:NEXLY_API_KEY) { "NEXLY_API_KEY 已设置" }
 ::: code-group
 
 ```bash [macOS / Linux]
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/models \
+curl --fail-with-body https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
 ```powershell [Windows PowerShell]
 $headers = @{ Authorization = "Bearer $env:NEXLY_API_KEY" }
 Invoke-RestMethod `
-  -Uri "https://nexlycn.guangnian.xin/v1/models" `
+  -Uri "https://nexly.guangnian.xin/v1/models" `
   -Headers $headers
 ```
 
@@ -139,7 +141,7 @@ $env:NEXLY_MODEL="把模型 ID 填在这里"
 ::: code-group
 
 ```bash [cURL]
-curl --fail-with-body https://nexlycn.guangnian.xin/v1/chat/completions \
+curl --fail-with-body https://nexly.guangnian.xin/v1/chat/completions \
   -H "Authorization: Bearer $NEXLY_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
@@ -164,7 +166,7 @@ $body = @{
 
 Invoke-RestMethod `
   -Method Post `
-  -Uri "https://nexlycn.guangnian.xin/v1/chat/completions" `
+  -Uri "https://nexly.guangnian.xin/v1/chat/completions" `
   -Headers $headers `
   -Body $body
 ```
@@ -176,7 +178,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key=os.environ["NEXLY_API_KEY"],
-    base_url="https://nexlycn.guangnian.xin/v1",
+    base_url="https://nexly.guangnian.xin",
 )
 
 response = client.chat.completions.create(
@@ -195,7 +197,7 @@ import OpenAI from 'openai'
 
 const client = new OpenAI({
   apiKey: process.env.NEXLY_API_KEY,
-  baseURL: 'https://nexlycn.guangnian.xin/v1',
+  baseURL: 'https://nexly.guangnian.xin',
 })
 
 const response = await client.chat.completions.create({
@@ -217,7 +219,7 @@ console.log(response.choices[0].message.content)
 - 请求返回 HTTP `200`。
 - 响应中包含 `choices[0].message.content`。
 - 返回内容不是 HTML 登录页或网关错误页。
-- 控制台用量记录中可以看到刚才的请求。
+- Nexly API 控制台的 **使用记录**中可以看到刚才的请求。
 
 如果请求失败，先按下表检查：
 
@@ -235,7 +237,7 @@ console.log(response.choices[0].message.content)
 
 - [ ] API Key 只保存在本机环境变量或服务端密钥管理系统中。
 - [ ] 模型 ID 来自当前账号的 `/v1/models` 响应。
-- [ ] SDK 的 Base URL 使用 `https://nexlycn.guangnian.xin/v1`。
+- [ ] SDK 的 Base URL 使用 `https://nexly.guangnian.xin`，末尾没有 `/v1`。
 - [ ] 第一个请求已返回 HTTP `200`。
 - [ ] 日志和错误反馈中没有包含完整 API Key。
 

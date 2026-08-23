@@ -1,13 +1,13 @@
 # CC Switch：配置 Claude Code
 
-Claude Code 原生使用 Anthropic Messages API。如果 Nexly 的对应模型支持该协议，可以直接连接；如果模型只支持 OpenAI Chat Completions，则需要 CC Switch 做本地协议转换。
+Claude Code 原生使用 Anthropic Messages API。本页介绍如何配置 Nexly API；如果模型只支持 OpenAI Chat Completions，则需要 CC Switch 做本地协议转换。
 
 ## 方式一：Anthropic Messages 直连
 
 适用于能够通过下面路径调用的模型：
 
 ```text
-POST https://nexlycn.guangnian.xin/v1/messages
+POST https://nexly.guangnian.xin/v1/messages
 ```
 
 配置步骤：
@@ -16,8 +16,8 @@ POST https://nexlycn.guangnian.xin/v1/messages
 2. 点击右上角 **+**，选择 **应用专属供应商**。
 3. 预设选择 **自定义**。
 4. 名称填写 `Nexly API`。
-5. API Key 填写 Nexly API Key。
-6. Base URL 填写 `https://nexlycn.guangnian.xin`。
+5. API Key 填写 Nexly API 控制台创建的 Key。
+6. Base URL 填写 `https://nexly.guangnian.xin`。
 7. API 格式选择 **Anthropic Messages**。
 8. 填写或选择支持 Claude Code 的模型 ID。
 9. 保存并点击 **启用**。
@@ -28,7 +28,7 @@ CC Switch 生成的核心配置类似：
 {
   "env": {
     "ANTHROPIC_API_KEY": "你的 Nexly API Key",
-    "ANTHROPIC_BASE_URL": "https://nexlycn.guangnian.xin"
+    "ANTHROPIC_BASE_URL": "https://nexly.guangnian.xin"
   }
 }
 ```
@@ -40,7 +40,7 @@ CC Switch 生成的核心配置类似：
 当模型只能调用 `/v1/chat/completions` 时：
 
 1. 添加或编辑 Claude Code 的 Nexly 供应商。
-2. Base URL 填写 `https://nexlycn.guangnian.xin`。
+2. Base URL 填写 `https://nexly.guangnian.xin`。
 3. 展开 **高级选项**。
 4. API 格式选择 **OpenAI Chat Completions**。
 5. 在模型映射中填写 Nexly 返回的真实模型 ID。

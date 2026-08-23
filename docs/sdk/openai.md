@@ -8,7 +8,7 @@ Nexly API 兼容 OpenAI SDK。迁移现有项目时，通常只需要修改 API 
 
 1. `NEXLY_API_KEY` 已设置，并能请求 `/v1/models`。
 2. `NEXLY_MODEL` 使用模型列表返回的真实 `id`。
-3. Base URL 为 `https://nexlycn.guangnian.xin/v1`。
+3. Base URL 为 `https://nexly.guangnian.xin`，无需添加 `/v1`。
 
 如果还没有完成这些步骤，请先阅读[快速开始](/guide/quickstart)。
 
@@ -17,10 +17,10 @@ Nexly API 兼容 OpenAI SDK。迁移现有项目时，通常只需要修改 API 
 | OpenAI SDK 配置 | Nexly 填写内容 |
 | --- | --- |
 | `api_key` / `apiKey` | `NEXLY_API_KEY` 环境变量 |
-| `base_url` / `baseURL` | `https://nexlycn.guangnian.xin/v1` |
+| `base_url` / `baseURL` | `https://nexly.guangnian.xin` |
 | `model` | `NEXLY_MODEL` 环境变量 |
 
-不要在 Base URL 后继续拼接 `/chat/completions`，SDK 会自动生成接口路径。
+不要在 Base URL 后拼接 `/v1` 或 `/chat/completions`。Nexly API 会识别 SDK 生成的接口路径。
 
 ## Python
 
@@ -44,7 +44,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key=os.environ["NEXLY_API_KEY"],
-    base_url="https://nexlycn.guangnian.xin/v1",
+    base_url="https://nexly.guangnian.xin",
     timeout=60.0,
     max_retries=2,
 )
@@ -102,7 +102,7 @@ if (!process.env.NEXLY_API_KEY || !process.env.NEXLY_MODEL) {
 
 const client = new OpenAI({
   apiKey: process.env.NEXLY_API_KEY,
-  baseURL: 'https://nexlycn.guangnian.xin/v1',
+  baseURL: 'https://nexly.guangnian.xin',
   timeout: 60_000,
   maxRetries: 2,
 })
@@ -133,7 +133,7 @@ for await (const chunk of stream) {
 
 - 非流式请求返回 `choices[0].message.content`。
 - 流式请求持续产生 `delta.content`，并正常结束。
-- Nexly 控制台出现对应模型的请求记录。
+- Nexly API 控制台的 **使用记录**中出现对应模型的请求记录。
 
 如果 SDK 报错，可以先用同一组 Key 和模型执行[最小 cURL 诊断](/help/errors#最小诊断流程)。cURL 成功但 SDK 失败时，重点检查 SDK 版本、Base URL 和代理配置。
 
