@@ -282,7 +282,7 @@ body {
 }
 
 .medium-zoom-image--opened {
-  z-index: 101;
+  z-index: 101 !important;
   cursor: zoom-out !important;
   border-radius: 8px;
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.34);
@@ -353,7 +353,33 @@ body {
 }
 
 .screenshot-slot__image--loaded {
+  position: relative;
+  inset: auto;
+  display: block;
+  height: auto;
   opacity: 1;
+}
+
+.screenshot-slot.screenshot-slot--loaded {
+  overflow: visible;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  aspect-ratio: auto;
+  background: transparent;
+  box-shadow: none;
+}
+
+.screenshot-slot.screenshot-slot--loaded .screenshot-slot__image {
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  cursor: zoom-in;
+}
+
+html.screenshot-preview-open {
+  overflow: hidden;
 }
 
 .screenshot-slot__placeholder {
