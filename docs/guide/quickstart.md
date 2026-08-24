@@ -27,16 +27,6 @@
 | `NEXLY_API_KEY` | 保存从控制台创建的 API Key |
 | `NEXLY_MODEL` | 保存 `/v1/models` 返回的真实模型 ID |
 
-### 操作流程预览
-
-下面的截图位置用于展示 Nexly API 创建 Key 和终端请求的完整路径。你补充图片后，文档会自动显示并支持点击放大。
-
-<ScreenshotPlaceholder
-  src="/images/nexlyapi/quickstart-overview.png"
-  title="Nexly API 快速开始完整流程"
-  description="建议截图包含：创建密钥、设置环境变量、查询模型、发送请求和 200 响应；所有 Key 必须打码。"
-/>
-
 ## 1. 创建 API Key
 
 1. 登录 [Nexly API 控制台](https://nexly.guangnian.xin)。
