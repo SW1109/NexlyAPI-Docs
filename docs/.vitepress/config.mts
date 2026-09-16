@@ -4,7 +4,8 @@ export default defineConfig({
   lang: 'zh-CN',
   title: 'Nexly API',
   description: '一套 API，连接每一种智能。兼容 OpenAI 协议的统一 AI API 服务。',
-  cleanUrls: true,
+  // 输出显式 .html 链接，保证宝塔/Nginx 作为普通静态站点时可直接刷新，不依赖 SPA 首页回退。
+  cleanUrls: false,
   lastUpdated: true,
   sitemap: {
     hostname: 'https://nexlydocs.guangnian.xin'

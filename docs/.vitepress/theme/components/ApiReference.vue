@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
-import { useData } from 'vitepress'
+import { useData, withBase } from 'vitepress'
 import '@scalar/api-reference/style.css'
 
 const { isDark } = useData()
 const container = useTemplateRef<HTMLElement>('container')
 
 const createConfiguration = (darkMode: boolean) => ({
-  url: '/openapi.yaml',
+  url: withBase('/openapi.yaml'),
   theme: 'kepler' as const,
   layout: 'modern' as const,
   localization: {
@@ -15,6 +15,7 @@ const createConfiguration = (darkMode: boolean) => ({
   },
   modelsSectionLabel: '数据模型',
   darkMode,
+  forceDarkModeState: darkMode ? ('dark' as const) : ('light' as const),
   showSidebar: true,
   hideModels: false,
   hideClientButton: false,
@@ -34,25 +35,46 @@ type ScalarInstance = {
 
 let scalarInstance: ScalarInstance | undefined
 let disposed = false
+let mounted = false
+let renderVersion = 0
 
-onMounted(async () => {
+const applyScalarThemeClass = (darkMode: boolean) => {
+  document.body.classList.toggle('dark-mode', darkMode)
+  document.body.classList.toggle('light-mode', !darkMode)
+}
+
+const renderScalar = async (darkMode: boolean) => {
   const target = container.value
   if (!target) return
 
-  const { createApiReference } = await import('@scalar/api-reference')
-  if (disposed) return
+  const currentVersion = ++renderVersion
+  scalarInstance?.destroy()
+  scalarInstance = undefined
+  applyScalarThemeClass(darkMode)
 
-  scalarInstance = createApiReference(target, createConfiguration(isDark.value))
+  const { createApiReference } = await import('@scalar/api-reference')
+  if (disposed || currentVersion !== renderVersion) return
+
+  // Scalar 的强制主题只在实例创建时读取，重建可避免它自己的 colorMode 缓存覆盖站点主题。
+  applyScalarThemeClass(darkMode)
+  scalarInstance = createApiReference(target, createConfiguration(darkMode))
+}
+
+onMounted(() => {
+  mounted = true
+  void renderScalar(isDark.value)
 })
 
 watch(isDark, (darkMode) => {
-  scalarInstance?.updateConfiguration(createConfiguration(darkMode))
+  if (mounted) void renderScalar(darkMode)
 })
 
 onBeforeUnmount(() => {
   disposed = true
+  renderVersion += 1
   scalarInstance?.destroy()
   scalarInstance = undefined
+  document.body.classList.remove('dark-mode', 'light-mode')
 })
 </script>
 

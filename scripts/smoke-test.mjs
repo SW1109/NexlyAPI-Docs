@@ -25,13 +25,13 @@ server.stderr.on('data', (chunk) => {
 
 const checks = [
   { path: '/', contains: 'Nexly API' },
-  { path: '/guide/quickstart', contains: '快速开始' },
-  { path: '/guide/console', contains: 'Nexly API 工作台' },
-  { path: '/tools/cc-switch-quick-import', contains: '从 Nexly API 快速导入' },
-  { path: '/tools/cc-switch', contains: '安装与添加 Nexly' },
-  { path: '/tools/cc-switch-codex', contains: '配置 Codex' },
-  { path: '/tools/cc-switch-claude', contains: '配置 Claude Code' },
-  { path: '/api-reference', contains: 'API Reference' },
+  { path: '/guide/quickstart.html', contains: '快速开始' },
+  { path: '/guide/console.html', contains: 'Nexly API 工作台' },
+  { path: '/tools/cc-switch-quick-import.html', contains: '从 Nexly API 快速导入' },
+  { path: '/tools/cc-switch.html', contains: '安装与添加 Nexly' },
+  { path: '/tools/cc-switch-codex.html', contains: '配置 Codex' },
+  { path: '/tools/cc-switch-claude.html', contains: '配置 Claude Code' },
+  { path: '/api-reference.html', contains: 'API Reference' },
   { path: '/images/quickstart/macos-api-quickstart.webp', contentType: 'image/webp' },
   { path: '/openapi.yaml', contains: 'https://nexly.guangnian.xin' },
   { path: '/sitemap.xml', contains: 'nexlydocs.guangnian.xin' }
