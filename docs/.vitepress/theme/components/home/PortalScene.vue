@@ -42,7 +42,7 @@ onBeforeUnmount(() => dispose?.())
       <span class="nexus-signal nexus-signal--two" />
       <span class="nexus-signal nexus-signal--three" />
     </div>
-    <Ripple v-if="showRipple" class="portal-ripple" :capture-content="false" :amplitude="0.22" :refraction="12" :dispersion="0.1" :shine="0.34" :wavelength="110" :decay="1.8" trigger="hover" :interval="0"><div class="ripple-surface" /></Ripple>
+    <Ripple v-if="showRipple" class="portal-ripple" :capture-content="false" :amplitude="0.22" :refraction="12" :dispersion="0.1" :shine="0.34" :wavelength="110" :decay="1.8" trigger="click" :interval="0"><div class="ripple-surface" /></Ripple>
     <div class="portal-coordinate"><span>01 / NEXUS</span><span>∞</span></div>
   </div>
 </template>
