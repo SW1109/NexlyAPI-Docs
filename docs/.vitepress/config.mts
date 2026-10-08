@@ -1,4 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { fileURLToPath } from 'node:url'
+import { createPageStyles } from './pageStyles'
+
+const pageStyles = createPageStyles(fileURLToPath(new URL('../', import.meta.url)))
 
 export default defineConfig({
   lang: 'zh-CN',
@@ -7,6 +11,17 @@ export default defineConfig({
   // 输出显式 .html 链接，保证宝塔/Nginx 作为普通静态站点时可直接刷新，不依赖 SPA 首页回退。
   cleanUrls: false,
   lastUpdated: true,
+  // 文档导航中有首页和调试页链接，不在后台预取这些较重的页面模块。
+  router: { prefetchLinks: false },
+  transformHead: pageStyles.transformHead,
+  transformHtml: pageStyles.transformHtml,
+  vite: {
+    plugins: [pageStyles.plugin],
+    build: {
+      // 页面局部组件的样式跟随路由加载，避免普通文档下载 Scalar 的整套样式。
+      cssCodeSplit: true
+    }
+  },
   sitemap: {
     hostname: 'https://nexlydocs.guangnian.xin'
   },

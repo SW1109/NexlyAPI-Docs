@@ -1,28 +1,9 @@
-import { spawn } from 'node:child_process'
-import process from 'node:process'
+import assert from 'node:assert/strict'
+import { once } from 'node:events'
+import { fileURLToPath } from 'node:url'
+import { build, serve } from 'vitepress'
 
-const host = '127.0.0.1'
-const port = 4173
-const origin = `http://${host}:${port}`
-const vitepressBin = 'node_modules/vitepress/bin/vitepress.js'
-
-const server = spawn(
-  process.execPath,
-  [vitepressBin, 'preview', 'docs', '--host', host, '--port', String(port)],
-  {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    windowsHide: true
-  }
-)
-
-let serverOutput = ''
-server.stdout.on('data', (chunk) => {
-  serverOutput += chunk.toString()
-})
-server.stderr.on('data', (chunk) => {
-  serverOutput += chunk.toString()
-})
-
+const docsRoot = fileURLToPath(new URL('../docs', import.meta.url))
 const checks = [
   { path: '/', contains: 'Nexly API' },
   { path: '/guide/quickstart.html', contains: '快速开始' },
@@ -32,42 +13,50 @@ const checks = [
   { path: '/tools/cc-switch-codex.html', contains: '配置 Codex' },
   { path: '/tools/cc-switch-claude.html', contains: '配置 Claude Code' },
   { path: '/api-reference.html', contains: 'API Reference' },
+  { path: '/help/faq.html', contains: '不会把新输入的 Key 持久保存' },
   { path: '/images/quickstart/macos-api-quickstart.webp', contentType: 'image/webp' },
-  { path: '/openapi.yaml', contains: 'https://nexly.guangnian.xin' },
-  { path: '/sitemap.xml', contains: 'nexlydocs.guangnian.xin' }
+  { path: '/openapi.yaml', contains: 'ResponseStreamEvent' },
+  { path: '/sitemap.xml', contains: 'nexlydocs.guangnian.xin' },
+  { path: '/__smoke_missing_page__', status: 404 },
+  { path: '/assets/__smoke_missing_asset__.js', status: 404 }
 ]
 
-const waitForServer = async () => {
-  for (let attempt = 0; attempt < 30; attempt += 1) {
-    try {
-      const response = await fetch(origin, { signal: AbortSignal.timeout(1000) })
-      if (response.ok) return
-    } catch {
-      // The preview server may still be starting.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200))
-  }
-  throw new Error(`预览服务启动失败。\n${serverOutput}`)
-}
+// 构建失败即停止，不允许旧 dist 通过发布检查；路径也不依赖调用者的工作目录。
+await build(docsRoot)
+// 持有真正的服务器实例并由系统分配端口，不再探测可能属于其他进程的固定端口。
+const { server } = await serve({ root: docsRoot, port: 0 })
 
 try {
-  await waitForServer()
+  if (!server.listening) {
+    await once(server, 'listening', { signal: AbortSignal.timeout(5_000) })
+  }
+  const address = server.address()
+  assert(address && typeof address === 'object', '无法取得本次预览的监听地址')
+  const origin = `http://127.0.0.1:${address.port}`
+  const assets = new Map()
 
-  for (const check of checks) {
-    const response = await fetch(`${origin}${check.path}`)
-
-    if (!response.ok) {
-      throw new Error(`${check.path} 返回 HTTP ${response.status}`)
-    }
-    if (check.contains && !(await response.text()).includes(check.contains)) {
-      throw new Error(`${check.path} 缺少预期内容：${check.contains}`)
-    }
-    if (check.contentType && !response.headers.get('content-type')?.includes(check.contentType)) {
-      throw new Error(`${check.path} Content-Type 不是 ${check.contentType}`)
+  const checkResponse = async (check) => {
+    const response = await fetch(`${origin}${check.path}`, { signal: AbortSignal.timeout(5_000) })
+    assert.equal(response.status, check.status ?? 200, `${check.path} 状态码不符合预期`)
+    const body = await response.text()
+    if (check.contains) assert(body.includes(check.contains), `${check.path} 缺少预期内容`)
+    if (check.contentType) {
+      assert(response.headers.get('content-type')?.includes(check.contentType), `${check.path} 类型不正确`)
     }
 
+    // 继续检查 HTML 实际引用的脚本和样式，避免页面有文字但资源已丢失的假通过。
+    if (response.status === 200 && response.headers.get('content-type')?.includes('text/html')) {
+      for (const [, path, extension] of body.matchAll(/(?:src|href)="(\/assets\/[^"?]+\.(js|css))"/g)) {
+        assets.set(path, extension === 'js' ? 'javascript' : 'text/css')
+      }
+    }
     console.log(`PASS ${response.status} ${check.path}`)
   }
+
+  for (const check of checks) await checkResponse(check)
+  assert(assets.size > 0, '构建页面没有引用任何脚本或样式')
+  for (const [path, contentType] of assets) await checkResponse({ path, contentType })
 } finally {
-  server.kill()
+  server.closeAllConnections()
+  await new Promise((resolve) => server.close(resolve))
 }

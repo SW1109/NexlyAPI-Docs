@@ -1,3 +1,10 @@
+<!--
+ * @Author: wxs
+ * @Date: 2026-08-24 17:35:09
+ * @Description:
+ * @LastEditTime: 2026-10-03 19:55:39
+ * @LastEditors: wxs
+-->
 # CC Switch：配置 Claude Code
 
 Claude Code 原生使用 Anthropic Messages API。本页介绍如何配置 Nexly API；如果模型只支持 OpenAI Chat Completions，则需要 CC Switch 做本地协议转换。

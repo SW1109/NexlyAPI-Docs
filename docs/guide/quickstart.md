@@ -128,6 +128,8 @@ $env:NEXLY_MODEL="把模型 ID 填在这里"
 
 下面四种方式任选一种。首次测试建议使用 cURL 或 PowerShell，以减少 SDK 环境带来的干扰。
 
+cURL / PowerShell 使用含 `/v1/...` 的完整接口地址；SDK 示例填写服务根地址，由 SDK 拼接路径。两类地址不要混填，详见[客户端地址类型](/guide/client-config#先确认地址类型)。
+
 ::: code-group
 
 ```bash [cURL]

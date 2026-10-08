@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { toRef, useTemplateRef } from 'vue'
 import { useNexusParticles } from './useNexusParticles'
+import type { HomeMotion } from './useHomeMotion'
 
+const props = defineProps<{ motion: HomeMotion; active: boolean }>()
 const canvas = useTemplateRef<HTMLCanvasElement>('canvas')
-useNexusParticles(canvas)
+useNexusParticles(canvas, props.motion, toRef(props, 'active'))
 </script>
 
 <template>

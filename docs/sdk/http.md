@@ -19,7 +19,7 @@ curl --fail-with-body https://nexly.guangnian.xin/v1/models \
   -H "Authorization: Bearer $NEXLY_API_KEY"
 ```
 
-只有模型列表返回 `200` 后，再调试业务请求。
+只有模型列表返回 `200` 后，再调试业务请求。这里验证的是完整 HTTP 路径；SDK 的 Base URL 与客户端的自动拼接规则见[客户端配置](/guide/client-config#先确认地址类型)，不要把完整接口 URL 原样填入 SDK。
 
 ## 非流式请求
 
@@ -73,6 +73,8 @@ data: [DONE]
 ```
 
 如果非流式请求正常但流式请求没有增量输出，检查反向代理是否开启了响应缓冲。
+
+上面的 `[DONE]` 结束标记属于 Chat Completions。`/v1/responses` 的 SSE 使用事件名，例如 `response.output_text.delta`、`response.completed`，也可能以失败或未完成事件结束；不要混用两种协议的解析逻辑。具体结构与示意见 [API Reference](/api-reference)，实际支持范围取决于模型和渠道。
 
 ## 查看状态码和响应头
 

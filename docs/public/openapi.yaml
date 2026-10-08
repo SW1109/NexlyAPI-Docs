@@ -88,6 +88,36 @@ paths:
                     - role: user
                       content: 写一首四行短诗。
                   stream: true
+              toolResult:
+                summary: 将工具执行结果交回模型（仅支持工具调用的模型）
+                value:
+                  model: gpt-4o-mini
+                  messages:
+                    - role: user
+                      content: 北京现在天气如何？
+                    - role: assistant
+                      content: null
+                      tool_calls:
+                        - id: call_weather_demo
+                          type: function
+                          function:
+                            name: get_weather
+                            arguments: '{"city":"北京"}'
+                    - role: tool
+                      tool_call_id: call_weather_demo
+                      content: '{"temperature":22,"condition":"晴"}'
+                  tools:
+                    - type: function
+                      function:
+                        name: get_weather
+                        description: 查询城市当前天气
+                        parameters:
+                          type: object
+                          properties:
+                            city:
+                              type: string
+                          required: [city]
+                  stream: false
       responses:
         '200':
           description: 对话补全结果；流式请求返回 `text/event-stream`
@@ -99,7 +129,16 @@ paths:
               schema:
                 type: string
                 description: |
-                  以 `data:` 开头的 SSE 数据流，并以 `data: [DONE]` 结束。
+                  每个事件以空行分隔，`data:` 中为 ChatCompletionChunk JSON。
+                  最后以 `data: [DONE]` 结束；增量字段不等同于完整 ChatMessage。
+              x-event-schema:
+                $ref: '#/components/schemas/ChatCompletionChunk'
+              example: |
+                data: {"id":"chatcmpl_demo","object":"chat.completion.chunk","created":1700000000,"model":"gpt-4o-mini","choices":[{"index":0,"delta":{"content":"你好"},"finish_reason":null}]}
+
+                data: {"id":"chatcmpl_demo","object":"chat.completion.chunk","created":1700000000,"model":"gpt-4o-mini","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+                data: [DONE]
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -120,16 +159,42 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ResponseRequest'
-            example:
-              model: gpt-4o-mini
-              input: 解释什么是 HTTP API。
+            examples:
+              basic:
+                summary: 非流式响应
+                value:
+                  model: gpt-4o-mini
+                  input: 解释什么是 HTTP API。
+                  stream: false
+              streaming:
+                summary: 流式响应（仅支持流式 Responses 的模型与渠道）
+                value:
+                  model: gpt-4o-mini
+                  input: 解释什么是 HTTP API。
+                  stream: true
       responses:
         '200':
-          description: 生成结果
+          description: 非流式返回 JSON；支持的流式请求返回 SSE
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResponseObject'
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  使用 `event:` 指定事件名，`data:` 携带 ResponseStreamEvent JSON，事件之间以空行分隔。
+                  下面仅展示部分事件的结构，不代表完整事件序列或所有模型的支持范围。
+                  应根据 response.completed、response.failed、response.incomplete 等终态处理结束，
+                  不应沿用 Chat Completions 的 [DONE] 判断。
+              x-event-schema:
+                $ref: '#/components/schemas/ResponseStreamEvent'
+              example: |
+                event: response.output_text.delta
+                data: {"type":"response.output_text.delta","item_id":"msg_demo","output_index":0,"content_index":0,"delta":"HTTP API 是"}
+
+                event: response.completed
+                data: {"type":"response.completed","response":{"id":"resp_demo","object":"response","status":"completed","output":[{"type":"message","id":"msg_demo","role":"assistant","status":"completed","content":[{"type":"output_text","text":"HTTP API 是通过 HTTP 访问的程序接口。","annotations":[]}]}]}}
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -159,6 +224,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EmbeddingResponse'
+              examples:
+                float:
+                  summary: float 数组（向量截短示意，非实际模型输出）
+                  value:
+                    object: list
+                    data:
+                      - object: embedding
+                        embedding: [0.1, 0.2, 0.3]
+                        index: 0
+                    model: text-embedding-3-small
+                    usage:
+                      prompt_tokens: 8
+                      total_tokens: 8
+                base64:
+                  summary: encoding_format 为 base64（示意）
+                  value:
+                    object: list
+                    data:
+                      - object: embedding
+                        embedding: zczMPc3MTD6amZk+
+                        index: 0
+                    model: text-embedding-3-small
+                    usage:
+                      prompt_tokens: 8
+                      total_tokens: 8
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -358,7 +448,11 @@ components:
             $ref: '#/components/schemas/Model'
     ChatMessage:
       type: object
-      required: [role, content]
+      required: [role]
+      description: |
+        普通消息需要 content；assistant 发起工具调用时，content 可以为 null 或省略。
+        tool 消息通过 tool_call_id 对应 assistant 返回的工具调用 ID。
+        工具调用与多模态内容仅适用于支持这些能力的模型。
       properties:
         role:
           type: string
@@ -371,15 +465,58 @@ components:
               items:
                 type: object
                 additionalProperties: true
+            - type: 'null'
         name:
           type: string
         tool_call_id:
           type: string
+          description: 工具执行结果对应的调用 ID
         tool_calls:
           type: array
+          minItems: 1
           items:
-            type: object
-            additionalProperties: true
+            $ref: '#/components/schemas/ChatToolCall'
+      allOf:
+        - if:
+            properties:
+              role:
+                const: assistant
+          then:
+            anyOf:
+              - required: [content]
+              - required: [tool_calls]
+          else:
+            required: [content]
+            properties:
+              content:
+                not:
+                  type: 'null'
+        - if:
+            properties:
+              role:
+                const: tool
+          then:
+            required: [tool_call_id]
+      additionalProperties: true
+    ChatToolCall:
+      type: object
+      required: [id, type, function]
+      properties:
+        id:
+          type: string
+          description: 在后续 tool 消息的 tool_call_id 中原样返回
+        type:
+          type: string
+          const: function
+        function:
+          type: object
+          required: [name, arguments]
+          properties:
+            name:
+              type: string
+            arguments:
+              type: string
+              description: JSON 编码的参数字符串；执行工具前需由应用解析并校验
       additionalProperties: true
     ChatCompletionRequest:
       type: object
@@ -470,6 +607,65 @@ components:
           $ref: '#/components/schemas/Usage'
         system_fingerprint:
           type: [string, 'null']
+      additionalProperties: true
+    ChatCompletionChunk:
+      type: object
+      required: [id, object, created, model, choices]
+      description: SSE 中单个 data 事件的 JSON；delta 只包含本次新增的字段
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          const: chat.completion.chunk
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            required: [index, delta]
+            properties:
+              index:
+                type: integer
+              delta:
+                type: object
+                properties:
+                  role:
+                    type: string
+                  content:
+                    type: [string, 'null']
+                  tool_calls:
+                    type: array
+                    description: 工具调用的增量片段；按 index 拼接，arguments 可能不是完整 JSON
+                    items:
+                      type: object
+                      additionalProperties: true
+                additionalProperties: true
+              finish_reason:
+                type: [string, 'null']
+        usage:
+          oneOf:
+            - $ref: '#/components/schemas/Usage'
+            - type: 'null'
+      additionalProperties: true
+    ResponseStreamEvent:
+      type: object
+      required: [type]
+      description: |
+        Responses 流式事件。这里只描述通用字段，事件种类和附加字段以模型、渠道为准。
+        文本增量与完整 response 对象出现在不同事件中，不要求同时存在。
+      properties:
+        type:
+          type: string
+          examples: [response.output_text.delta, response.completed, response.failed, response.incomplete]
+        delta:
+          type: string
+          description: output_text.delta 等事件中的文本片段
+        response:
+          $ref: '#/components/schemas/ResponseObject'
       additionalProperties: true
     ResponseRequest:
       type: object
@@ -570,9 +766,13 @@ components:
                 type: string
                 const: embedding
               embedding:
-                type: array
-                items:
-                  type: number
+                description: 与请求的 encoding_format 对应；float 返回数字数组，base64 返回编码字符串
+                oneOf:
+                  - type: array
+                    items:
+                      type: number
+                  - type: string
+                    contentEncoding: base64
               index:
                 type: integer
         model:

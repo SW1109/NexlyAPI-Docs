@@ -14,8 +14,10 @@
 | --- | --- |
 | SDK 的 `base_url` / `baseURL` | `https://nexly.guangnian.xin` |
 | 客户端的 Base URL / API Host | `https://nexly.guangnian.xin` |
-| 直接发送 HTTP 请求 | 使用完整地址，例如 `/v1/chat/completions` |
+| 直接发送 HTTP 请求 | 服务根地址加完整路径，例如 `https://nexly.guangnian.xin/v1/chat/completions` |
 | 完整接口 URL 模式 | `https://nexly.guangnian.xin/v1/chat/completions` |
+
+服务根地址不包含接口路径。SDK 和客户端会自行拼接路径，而 HTTP 示例与 OpenAPI 已写明 `/v1/...`，使用时不要重复追加。本文保留 Nexly 的无 `/v1` Base URL 接入约定；若某个客户端版本仍报 `404`，请先检查它最终发出的完整 URL，再核对该客户端的拼接规则，不要仅凭字段名称猜测。
 
 ::: warning 不要默认填写完整接口路径
 除非客户端明确要求“完整 URL”，否则不要在 Base URL 后添加 `/v1`、`/chat/completions` 或 `/responses`。Nexly API 会识别客户端实际发出的接口路径。

@@ -1,31 +1,29 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, shallowRef, useTemplateRef } from 'vue'
 import { withBase } from 'vitepress'
 import NexusParticleField from './NexusParticleField.vue'
+import type { HomeMotion } from './useHomeMotion'
 
+const props = defineProps<{ motion: HomeMotion }>()
 const Ripple = defineAsyncComponent(() => import('../canvasui/Ripple.vue'))
 const scene = useTemplateRef<HTMLElement>('scene')
-const showRipple = shallowRef(false)
-let dispose: (() => void) | undefined
+const visible = shallowRef(false)
+const active = computed(() => visible.value && props.motion.running.value)
+const showRipple = computed(() => active.value && !props.motion.compact.value)
+let observer: IntersectionObserver | undefined
 
-// 装饰层按需挂载：移动端、离屏、后台和减少动态效果时释放 GPU 资源。
+// 共用首页策略，场景离屏时额外停止画布并释放 WebGL 装饰层。
 onMounted(() => {
-  const media = matchMedia('(min-width: 761px) and (prefers-reduced-motion: no-preference)')
-  let visible = false
-  const sync = () => { showRipple.value = visible && media.matches && !document.hidden }
-  const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync() })
+  observer = new IntersectionObserver(([entry]) => { visible.value = entry.isIntersecting })
   if (scene.value) observer.observe(scene.value)
-  media.addEventListener('change', sync)
-  document.addEventListener('visibilitychange', sync)
-  dispose = () => { observer.disconnect(); media.removeEventListener('change', sync); document.removeEventListener('visibilitychange', sync) }
 })
-onBeforeUnmount(() => dispose?.())
+onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
   <div ref="scene" class="portal-scene" aria-hidden="true">
     <div class="portal-aura" />
-    <NexusParticleField />
+    <NexusParticleField :motion="motion" :active="active" />
     <div class="nexus-grid" />
     <div class="portal-parallax">
       <span class="nexus-bracket nexus-bracket--top" />

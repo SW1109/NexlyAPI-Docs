@@ -20,7 +20,7 @@ Nexly API 兼容 OpenAI SDK。迁移现有项目时，通常只需要修改 API 
 | `base_url` / `baseURL` | `https://nexly.guangnian.xin` |
 | `model` | `NEXLY_MODEL` 环境变量 |
 
-不要在 Base URL 后拼接 `/v1` 或 `/chat/completions`。Nexly API 会识别 SDK 生成的接口路径。
+不要在 Base URL 后拼接 `/v1` 或 `/chat/completions`。本页沿用 Nexly 的兼容入口约定；SDK 将自行生成接口路径，与手写 HTTP 示例中的完整 `/v1/...` URL 不是同一类配置。客户端版本差异与排错方法见[地址类型说明](/guide/client-config#先确认地址类型)。
 
 ## Python
 
@@ -70,6 +70,9 @@ stream = client.chat.completions.create(
 )
 
 for chunk in stream:
+    # 用量等附加事件可能没有 choices，不将它们当作文本片段。
+    if not chunk.choices:
+        continue
     content = chunk.choices[0].delta.content
     if content:
         print(content, end="", flush=True)
